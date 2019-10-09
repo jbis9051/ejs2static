@@ -1,0 +1,21 @@
+{
+  "name": "ejs2static",
+  "version": "1.0.1",
+  "description": "An extremely simple static site generator supporting ejs",
+  "keywords": [],
+  "main": "ejs2static.js",
+  "author": "Josh Brown (https://joshbrown.info)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbis9051/ejs-to-static"
+  },
+  "bin": {
+    "ejs2static": "./cli.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^2.7.1",
+    "fs-extra": "^8.1.0",
+    "minimist": "^1.2.0"
+  }
+}
