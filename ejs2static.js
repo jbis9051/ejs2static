@@ -2,66 +2,57 @@ const path = require("path");
 const fse = require('fs-extra');
 const ejs = require('ejs');
 
-module.exports = (options) => {
-    options = options || {};
+class Generator {
+    constructor(options) {
+        this.fileData = options.data || {};
+        this.sourceDir = path.resolve(options.sourceDir);
+        this.outputDir = path.resolve(options.outputDir);
+        this.copyAll = !!options.copyAll;
 
-    if (!options.ejsDir && !options.root) {
-        options.root = process.cwd()
-    }
-    if(options.ejsDir && !options.buildDir){
-        throw new Error("'buildDir' required")
-    }
-    if(options.root){
-        options.ejsDir = path.join(options.root,'views');
-        if(!options.buildDir){
-            options.buildDir = path.join(options.root,'gen');
-        }
-        if(!options.skipStatic){
-            options.staticDir = path.join(options.root,'public');
-        }
-    }
-    options.ejsDir = path.resolve(options.ejsDir);
-    options.buildDir = path.resolve(options.buildDir);
-    if(options.staticDir){
-        options.staticDir = path.resolve(options.staticDir);
-    }
-    return generate(options.ejsDir, options.buildDir, options.staticDir).catch(err => {
-        throw new Error(err);
-    }).then(_ => {
-        console.log("Static site generation complete!");
-        console.log("Exported to: " + options.buildDir);
-    });
-};
 
-async function generate(ejsDir,buildDir, staticDir) {
-    await fse.ensureDir(buildDir);
-    await fse.emptyDir(buildDir);
-    const promises = [];
-    if (staticDir && await fse.exists(staticDir)) {
-        promises.push(fse.copy(staticDir, buildDir));
+        Object.keys(this.fileData).forEach(key => {
+            this.fileData[path.resolve(path.join(this.sourceDir, key))] = this.fileData[key];
+        });
     }
-    promises.push(generateDirRecursive(ejsDir, buildDir));
-    await Promise.all(promises);
-}
 
-async function generateFile(fromFilePath, toDirectory) {
-    const str = await ejs.renderFile(fromFilePath);
-    const newFileName = path.basename(fromFilePath).replace(".ejs", ".html");
-    await fse.createFile(path.join(toDirectory, newFileName));
-    await fse.writeFile(path.join(toDirectory, newFileName), str)
-}
+    async generate() {
+        await fse.ensureDir(this.outputDir);
+        console.log(`Clearing ${this.outputDir}...`);
+        await fse.emptyDir(this.outputDir);
+        await this.generateDirRecursive(this.sourceDir, this.outputDir);
+    }
+    getData(path) {
+        return this.fileData[path] || {};
+    }
 
-async function generateDirRecursive(fromFolder, toFolder) {
-    const promises = [];
-    const filesNDirs = await fse.readdir(fromFolder, {withFileTypes: true});
-    filesNDirs.forEach(fileOrDir => {
-        if (fileOrDir.isDirectory()) {
-            promises.push(generateDirRecursive(path.join(fromFolder, fileOrDir.name), path.join(toFolder, fileOrDir.name)));
-        } else {
-            if (fileOrDir.name.match(/\.ejs$/)) {
-                promises.push(generateFile(path.join(fromFolder, fileOrDir.name), toFolder));
+    async generateFile(fromFilePath, toFile) {
+        const basename = path.basename(fromFilePath);
+        console.log(`Rendering ${basename}...`);
+        const str = await ejs.renderFile(fromFilePath, this.getData(fromFilePath));
+        const newFileName = toFile.replace(/\.ejs$/, ".html");
+        await fse.createFile(newFileName);
+        await fse.writeFile(newFileName, str);
+        console.log(`Wrote ${basename} to ${newFileName}`);
+    }
+
+    async generateDirRecursive(fromFolder, toFolder) {
+        const promises = [];
+        const filesNDirs = await fse.readdir(fromFolder, {withFileTypes: true});
+        filesNDirs.forEach(fileOrDir => {
+            if (fileOrDir.isDirectory()) {
+                promises.push(this.generateDirRecursive(path.join(fromFolder, fileOrDir.name), path.join(toFolder, fileOrDir.name)));
+            } else {
+                if (fileOrDir.name.match(/\.ejs$/)) {
+                    promises.push(this.generateFile(path.join(fromFolder, fileOrDir.name), path.join(toFolder, fileOrDir.name)));
+                } else {
+                    if (this.copyAll) {
+                        promises.push(fse.copyFile(path.join(fromFolder, fileOrDir.name), path.join(toFolder, fileOrDir.name)));
+                    }
+                }
             }
-        }
-    });
-    await Promise.all(promises);
+        });
+        await Promise.all(promises);
+    }
 }
+
+module.exports = Generator;

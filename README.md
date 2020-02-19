@@ -1,4 +1,4 @@
-# ejs-to-static
+# ejs2static
 
 *An extremely simple static site generator supporting ejs*
 
@@ -8,7 +8,7 @@ This module/CLI app will generate static sites from ejs files. This allows you t
 
 I created this because I couldn't find a super simple module or CLI app to do it. [Harp](https://github.com/sintaxi/harp) exists, but [apparently Node 12 isn't supported](https://github.com/sintaxi/harp/issues/648).
 
-##Installation
+## Installation
 
 CLI:
 
@@ -37,7 +37,7 @@ Static site generation complete!
 Exported to: /path/to/poject/gen
 ```
 
-####Advanced usage:
+#### Advanced usage:
 
 Arguments:
 
@@ -69,26 +69,62 @@ Exported to: /path/to/poject/gen
 ### Module
 
 ```js
-const ejs2static = require('ejs2static');
+const Generator = require('ejs2static');
 
-ejs2static([options]); // returns a Promise that resolves once all files are generated
+const generator = new Generator(options);
+
+gen.generate() // returns a Promise that resolves once all files are generated
 ```
 
 
 #### `options`(optional)
 
-- `root: "/path/to/project"` - Uses the provided path as the root path of the project.
-- `ejsDir: "/path/to/ejsFileDirectory"` - This directory will be searched recursively for `.ejs` files. These files will be rendered to HTML and copied to the `buildDir` retaining the directory structure.
-- `buildDir: "/path/to/build/dir"` - Generates to the static site to this directory. Defaults to `[root]/gen` **This directory will be cleared before generation!**
-- `staticDir: "/path/to/static/dir"` - Files from this directory are copied directly to the `buildDir`. Used for assets (images, etc.), and already static pages. Defaults to `[root]/static`. If the default path doesn't exist and a different one isn't provided nothing will be coppied.
-- `skipStatic: true` - Used in conjunction with `--root` or with no arguments to skip the default static directory even if it exists
+- `sourceDir` - This directory will be searched recursively for files. EJS files will be rendered to HTML and copied to the `outputDur` retaining the directory structure.
+- `outputDir` - Generates to the static site to this directory.**This directory will be cleared before generation!**
+- `copyAll` (optional - default `false`) - If true, all non ejs files in the `sourceDir` will be copied to the `buildDir`. This is helpful for copying assets.
+- `data` - (optional - default `{}`) - Object with keys of files relative to the `sourceDir` and values of an object that will be passed as data to the ejs render when the file specified in the key is rendered. (Huh? Checked the examples).
 
-Rules:
 
-- Use `root` OR `ejsDir`, not both. 
+# Example
 
-- If `ejsDir` is used `buildDir` is required
+```text
+├── dist
+│   ├── components
+│   │   └── head.html
+│   ├── dir
+│   │   └── dirtest.html
+│   ├── test-file.txt
+│   └── test.html
+├── ejs
+│   ├── components
+│   │   └── head.ejs
+│   ├── dir
+│   │   └── dirtest.ejs
+│   ├── test-file.txt
+│   └── test.ejs
+└── test.js
 
+```
+
+
+```js
+// test.js
+const Generator = require('../ejs2static');
+
+const gen = new Generator({
+    sourceDir: './ejs',
+    outputDir: './dist',
+    copyAll: true,
+    data: {
+        './dir/dirtest.ejs': {
+            someData: "testing data"
+        }
+    }
+});
+
+gen.generate().then(_ => console.log("Done!"));
+
+```
 
 ## License
 
