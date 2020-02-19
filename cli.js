@@ -1,12 +1,6 @@
 #!/usr/bin/env node
 const main = require('./ejs2static.js');
 
-
-if(process.argv.length < 3){
-    main();
-    return;
-}
-
 const argv = require('minimist')(process.argv.slice(2));
 
 const validArgs = [
@@ -18,16 +12,27 @@ const validArgs = [
 ];
 
 Object.keys(argv).slice(1).forEach(arg => {
-    if(arg === "h"){
-        displayHelp();
-        process.exit();
-    } else if(!validArgs.includes(arg)){
-       console.error(`Unknown argument: ${arg}`);
-       displayHelp();
-       process.exit();
+    switch (arg) {
+        case "h": {
+            displayHelp();
+            process.exit();
+            break;
+        }
+        case "help": {
+            displayHelp();
+            process.exit();
+            break;
+        }
+        default: {
+            if (!validArgs.includes(arg)) {
+                console.error(`Unknown argument: ${arg}`);
+                displayHelp();
+                process.exit();
+            }
+        }
+
     }
 });
-
 main(argv);
 
 
