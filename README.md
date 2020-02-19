@@ -4,17 +4,11 @@
 
 ## Description 
 
-This module/CLI app will generate static sites from ejs files. This allows you to deploy your site on a static provider such as GitHub pages.
+This module will generate static sites from ejs files. This allows you to deploy your site on a static provider such as GitHub pages.
 
 I created this because I couldn't find a super simple module or CLI app to do it. [Harp](https://github.com/sintaxi/harp) exists, but [apparently Node 12 isn't supported](https://github.com/sintaxi/harp/issues/648).
 
 ## Installation
-
-CLI:
-
-```shell script
-npm install -g ejs2static
-```
 
 Module
 
@@ -23,50 +17,6 @@ npm install ejs2static --save
 ```
 
 ## Usage
-
-### CLI
-
-#### Simple usage:
-- ejs files must be in `./views`
-- Site will be generated to `./gen`
-
-```console
-$ cd /path/to/project
-$ ejs2static
-Static site generation complete!
-Exported to: /path/to/poject/gen
-```
-
-#### Advanced usage:
-
-Arguments:
-
-See [#Module Args](#optionsoptional) for descriptions and rules
-
-- `--root="/path/to/project"` 
-- `--ejsDir="/path/to/ejsFileDirectory"` 
-- `--buildDir="/path/to/build/dir"`
-- `--staticDir="/path/to/static/dir"`
-- `--skipStatic` 
-
-
-Example:
-
-Using the current working directory as `--root` but skips static files
-```console
-$ ejs2static --skipStatic
-Static site generation complete!
-Exported to: /path/to/poject/gen
-```
-
-Using the current working directory as `--root` but skips static files
-```console
-$ ejs2static --root="/path/to/project"
-Static site generation complete!
-Exported to: /path/to/poject/gen
-```
-
-### Module
 
 ```js
 const Generator = require('ejs2static');
@@ -77,7 +27,7 @@ gen.generate() // returns a Promise that resolves once all files are generated
 ```
 
 
-#### `options`(optional)
+### `options`(optional)
 
 - `sourceDir` - This directory will be searched recursively for files. EJS files will be rendered to HTML and copied to the `outputDur` retaining the directory structure.
 - `outputDir` - Generates to the static site to this directory.**This directory will be cleared before generation!**
