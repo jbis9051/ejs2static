@@ -46,7 +46,7 @@ class Generator {
                     promises.push(this.generateFile(path.join(fromFolder, fileOrDir.name), path.join(toFolder, fileOrDir.name)));
                 } else {
                     if (this.copyAll) {
-                        promises.push(fse.copyFile(path.join(fromFolder, fileOrDir.name), path.join(toFolder, fileOrDir.name)));
+                        promises.push(fse.copy(path.join(fromFolder, fileOrDir.name), path.join(toFolder, fileOrDir.name)));
                     }
                 }
             }
