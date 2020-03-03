@@ -8,7 +8,8 @@ const gen = new Generator({
         './dir/dirtest.ejs': {
             someData: "testing data"
         }
-    }
+    },
+    empty: false,
 });
 
 gen.generate().then(_ => console.log("Done!"));

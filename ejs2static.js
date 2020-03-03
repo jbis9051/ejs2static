@@ -8,6 +8,7 @@ class Generator {
         this.sourceDir = path.resolve(options.sourceDir);
         this.outputDir = path.resolve(options.outputDir);
         this.copyAll = !!options.copyAll;
+        this.empty = !!options.empty;
 
 
         Object.keys(this.fileData).forEach(key => {
@@ -17,8 +18,10 @@ class Generator {
 
     async generate() {
         await fse.ensureDir(this.outputDir);
-        console.log(`Clearing ${this.outputDir}...`);
-        await fse.emptyDir(this.outputDir);
+        if(this.empty){
+            console.log(`Clearing ${this.outputDir}...`);
+            await fse.emptyDir(this.outputDir);
+        }
         await this.generateDirRecursive(this.sourceDir, this.outputDir);
     }
     getData(path) {

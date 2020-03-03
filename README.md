@@ -30,9 +30,10 @@ gen.generate() // returns a Promise that resolves once all files are generated
 ### `options`(optional)
 
 - `sourceDir` - This directory will be searched recursively for files. EJS files will be rendered to HTML and copied to the `outputDur` retaining the directory structure.
-- `outputDir` - Generates to the static site to this directory.**This directory will be cleared before generation!**
+- `outputDir` - Generates to the static site to this directory.**This directory will be cleared before generation if `empty` option is true!**
 - `copyAll` (optional - default `false`) - If true, all non ejs files in the `sourceDir` will be copied to the `buildDir`. This is helpful for copying assets.
-- `data` - (optional - default `{}`) - Object with keys of files relative to the `sourceDir` and values of an object that will be passed as data to the ejs render when the file specified in the key is rendered. (Huh? Checked the examples).
+- `data` - (optional - default `{}`) - Object with keys of files relative to the `sourceDir` and values of an object that will be passed as data to the ejs render when the file specified in the key is rendered. (Huh? Check the examples).
+- `empty` - (optional - default `false`) - If true, the outputDir will be cleared before render.
 
 
 # Example
